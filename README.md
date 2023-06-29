@@ -11,4 +11,7 @@ Server:
 >>>>>>>> POST '/auth/login' (username, password) <br/>
 >>>>>> Need token: <br/>
 >>>>>>>> GET '/auth/profile' <br/>
+>>>> Noti( need token): <br/> 
+>>>>>> POST '/users/:id/notis' (description) <br/>
+>>>>>> GET '/users/:id:notis' <br/>
 <br/>

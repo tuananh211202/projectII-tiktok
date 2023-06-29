@@ -4,3 +4,11 @@ export type CreateUserParams = {
     name: string;
     description: string;
 }
+
+export type CreateUserNotiParams = {
+    description: string;
+}
+
+export type GetNotiParams = {
+    id: number;
+}
