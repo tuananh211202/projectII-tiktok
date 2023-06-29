@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { User } from './typeorm/entities/User';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -13,7 +14,7 @@ import { UsersModule } from './modules/users/users.module';
     username: 'root',
     password: '123456',
     database: 'project_tiktok',
-    entities: [],
+    entities: [User],
     synchronize: true,
   }), AuthModule, UsersModule],
   controllers: [AppController],
