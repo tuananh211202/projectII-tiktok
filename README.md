@@ -7,11 +7,16 @@ Server:
 >> API: <br/>
 >>>> User <br/>
 >>>>>> Public: <br/>
->>>>>>>> POST '/users/signup' (username, password, name, description) <br/>
->>>>>>>> POST '/auth/login' (username, password) <br/>
+>>>>>>>> Signup: POST '/users/signup' (username, password, name, description) <br/>
+>>>>>>>> Login: POST '/auth/login' (username, password) <br/>
 >>>>>> Need token: <br/>
->>>>>>>> GET '/auth/profile' <br/>
+>>>>>>>> Get profile: GET '/auth/profile' <br/>
 >>>> Noti( need token): <br/> 
->>>>>> POST '/users/:id/notis' (description) <br/>
->>>>>> GET '/users/:id:notis' <br/>
+>>>>>> Create noti: POST '/users/:id/notis' (description) <br/>
+>>>>>> Get all noti: GET '/users/:id:notis' <br/>
+>>>> Follow( need token): <br/>
+>>>>>> UserId follow Id: POST '/users/:userId/follow/:id' <br/>
+>>>>>> UserId unfollow Id: DELETE '/users/:userId/follow/:id' <br/>
+>>>>>> Get all followers: GET '/users/:userId/followers' <br/>
+>>>>>> Get all following: GET '/users/:userId/following' <br/>
 <br/>

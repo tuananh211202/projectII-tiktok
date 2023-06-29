@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { User } from './typeorm/entities/User';
 import { Noti } from './typeorm/entities/Noti';
+import { Follow } from './typeorm/entities/Follow';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -15,7 +16,7 @@ import { Noti } from './typeorm/entities/Noti';
     username: 'root',
     password: '123456',
     database: 'project_tiktok',
-    entities: [User, Noti],
+    entities: [User, Noti, Follow],
     synchronize: true,
   }), AuthModule, UsersModule],
   controllers: [AppController],

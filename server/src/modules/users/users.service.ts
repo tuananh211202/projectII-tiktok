@@ -5,14 +5,14 @@ import { CreateUserNotiParams, CreateUserParams, GetNotiParams } from 'src/utils
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Noti } from 'src/typeorm/entities/Noti';
-
-// This should be a real class/interface representing a user entity
+import { Follow } from 'src/typeorm/entities/Follow';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(Noti) private notiRepository: Repository<Noti>
+    @InjectRepository(Noti) private notiRepository: Repository<Noti>,
+    @InjectRepository(Follow) private followRepository: Repository<Follow>,
   ){}
 
   async createUser(userDetails: CreateUserParams){
@@ -23,7 +23,11 @@ export class UsersService {
         ...userDetails, 
         createAt: new Date() 
       });
-      return this.userRepository.save(newUser);
+      this.userRepository.save(newUser);
+      throw new HttpException(
+        'Signup successfully!!!',
+        HttpStatus.CREATED
+      )
     } else {
       throw new HttpException(
         'User already exists!!!',
@@ -57,6 +61,89 @@ export class UsersService {
       );
     }
     const notis = await this.notiRepository.findBy({ user });
+
     return notis;
+  }
+
+  async followUser(userId: number, id: number){
+    const user = await this.userRepository.findOneBy({ id: userId });
+    const followedUser = await this.userRepository.findOneBy({ id });
+    if(!user || !followedUser){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    const newFollow = this.followRepository.create({ followers: user, following: followedUser });
+    this.followRepository.save(newFollow);
+    this.createUserNoti(id, {
+      description: "Người dùng " + user.name + " đã theo dõi bạn"
+    });
+    throw new HttpException(
+      'Add following successfully',
+      HttpStatus.CREATED
+    )
+  }
+
+  async unfollowUser(userId: number, id: number){
+    const user = await this.userRepository.findOneBy({ id: userId });
+    const followedUser = await this.userRepository.findOneBy({ id });
+    if(!user || !followedUser){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    this.followRepository.delete({ followers: user, following: followedUser });
+    throw new HttpException(
+      'Unfollow successfully',
+      HttpStatus.OK
+    )
+  }
+
+  async getAllFollowers(id: number){
+    const user = await this.userRepository.findOneBy({ id });
+    if(!user){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    const followers = await this.followRepository.find({
+      where: {following: user },
+      relations: [ 'followers' ]
+    });
+    return followers.map(item => {
+      return {
+        id: item.id,
+        user: {
+          id: item.followers.id,
+          name: item.followers.name
+        }
+      }
+    });
+  }
+
+  async getAllFollowing(id: number){
+    const user = await this.userRepository.findOneBy({ id });
+    if(!user){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    const following = await this.followRepository.find({ 
+      where: {followers: user},
+      relations: [ 'following' ]
+    });
+    return following.map(item => {
+      return {
+        id: item.id,
+        user: {
+          id: item.following.id,
+          name: item.following.name
+        }
+      }
+    });
   }
 }
