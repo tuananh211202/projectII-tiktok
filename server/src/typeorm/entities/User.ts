@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Noti } from "./Noti";
 import { Follow } from "./Follow";
+import { Message } from "./Message";
 
 @Entity({ name: 'users' })
 export class User {
@@ -29,5 +30,11 @@ export class User {
     following: Follow[];
     // Người đang theo dõi mình
     @OneToMany(() => Follow, (follow) => follow.followers)
-    followers: Follow[]
+    followers: Follow[];
+    
+    @OneToMany(() => Message, (message) => message.sender)
+    senders: Message[];
+
+    @OneToMany(() => Message, (message) => message.receiver)
+    receivers: Message[];
 }

@@ -3,7 +3,7 @@ import { User } from "./User";
 
 @Entity({ name: "follow" })
 export class Follow {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({type: 'bigint'})
     id: number;
     // Người được theo dõi
     @ManyToOne(() => User, (user) => user.following)
