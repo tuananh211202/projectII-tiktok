@@ -30,13 +30,13 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {
-    // const user = await this.usersService.findOne(req.user.username);
-    // return {
-    //   id: user.id,
-    //   name: user.name,
-    //   username: user.username,
-    //   description: user.description
-    // };
-    return req.user;
+    const user = await this.usersService.findOne(req.user.username);
+    return {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      description: user.description
+    };
+    // return req.user;
   }
 }

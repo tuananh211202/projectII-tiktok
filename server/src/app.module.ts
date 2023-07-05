@@ -8,6 +8,7 @@ import { User } from './typeorm/entities/User';
 import { Noti } from './typeorm/entities/Noti';
 import { Follow } from './typeorm/entities/Follow';
 import { Message } from './typeorm/entities/Message';
+import { CorsModule } from './cors/cors.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -19,7 +20,7 @@ import { Message } from './typeorm/entities/Message';
     database: 'project_tiktok',
     entities: [User, Noti, Follow, Message],
     synchronize: true,
-  }), AuthModule, UsersModule],
+  }), AuthModule, UsersModule, CorsModule],
   controllers: [AppController],
   providers: [AppService],
 })

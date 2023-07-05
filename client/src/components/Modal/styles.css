@@ -1,0 +1,8 @@
+.modalStyle .ant-modal-header {
+    font-family: "Signika";
+    font-weight: 500;
+}
+
+.antdTextArea::before + textarea {
+    font-family: "Signika";
+}
