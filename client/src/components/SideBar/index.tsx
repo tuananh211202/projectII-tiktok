@@ -6,8 +6,8 @@ import { HiOutlineVideoCamera, HiOutlineShoppingBag } from "react-icons/hi";
 const SideBar = () => {
     return (
         <Row 
-            className="w-full bg-black"
-            style={{ height: "710px" }}
+            className="bg-black w-48"
+            style={{ height: "710px", position: "fixed", left: 0, top: 80 }}
         >
             <Row className="w-full bg-white h-1/3">
                 <Button type='text' className="w-full h-10 mt-1">

@@ -9,6 +9,8 @@ import { Noti } from './typeorm/entities/Noti';
 import { Follow } from './typeorm/entities/Follow';
 import { Message } from './typeorm/entities/Message';
 import { CorsModule } from './cors/cors.module';
+import { ChatGateway } from './chat/chat.gateway';
+// import { SocketModule } from '@nestjs/platform-socket.io';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -22,6 +24,6 @@ import { CorsModule } from './cors/cors.module';
     synchronize: true,
   }), AuthModule, UsersModule, CorsModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ChatGateway],
 })
 export class AppModule {}

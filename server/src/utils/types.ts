@@ -12,3 +12,9 @@ export type CreateUserNotiParams = {
 export type GetNotiParams = {
     id: number;
 }
+
+export type CreateMessageParams = {
+    description: string;
+    senderId: number;
+    receiverId: number;
+}

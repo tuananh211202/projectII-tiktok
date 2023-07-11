@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/User';
-import { CreateUserNotiParams, CreateUserParams, GetNotiParams } from 'src/utils/types';
+import { CreateMessageParams, CreateUserNotiParams, CreateUserParams, GetNotiParams } from 'src/utils/types';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Noti } from 'src/typeorm/entities/Noti';
 import { Follow } from 'src/typeorm/entities/Follow';
+import { Message } from 'src/typeorm/entities/Message';
 
 @Injectable()
 export class UsersService {
@@ -13,6 +14,7 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Noti) private notiRepository: Repository<Noti>,
     @InjectRepository(Follow) private followRepository: Repository<Follow>,
+    @InjectRepository(Message) private messageRepository: Repository<Message>,
   ){}
 
   async createUser(userDetails: CreateUserParams){
@@ -34,6 +36,22 @@ export class UsersService {
         HttpStatus.CONFLICT
       );
     }
+  }
+
+  async getUserById(id: number){
+    const user = await this.userRepository.findOneBy({ id: id });
+    if(!user){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      description: user.description
+    };
   }
 
   async findOne(username: string){
@@ -146,4 +164,49 @@ export class UsersService {
       }
     });
   }
+
+  async createMessage(messageDetails: CreateMessageParams){
+    const sender = await this.userRepository.findOneBy({ id: messageDetails.senderId });
+    const receiver = await this.userRepository.findOneBy({ id: messageDetails.receiverId });
+    if(!sender || !receiver){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    const newMessage = this.messageRepository.create({ 
+      description: messageDetails.description, 
+      sender: sender, receiver: receiver, 
+      createAt: new Date() 
+    });
+    this.messageRepository.save(newMessage);
+  }
+
+  async getMessage(senderId: number, receiverId: number){
+    const sender = await this.userRepository.findOneBy({ id: senderId });
+    const receiver = await this.userRepository.findOneBy({ id: receiverId });
+    if(!sender || !receiver){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    const messages = await this.messageRepository.find({
+      where: [
+        {sender: sender, receiver: receiver},
+        {sender: receiver, receiver: sender},
+      ],
+      order: { createAt: "ASC" },
+      relations: [ 'sender', 'receiver' ]
+    });
+    return messages.map(message => {
+      return {
+        description: message.description,
+        createAt: message.createAt,
+        sender: message.sender.id,
+        receiver: message.receiver.id
+      }
+    })
+  }
+
 }

@@ -9,6 +9,10 @@ export class Message {
     @Column()
     description: string;
     // Người gửi
+
+    @Column()
+    createAt: Date;
+
     @ManyToOne(() => User, (user) => user.senders)
     sender: User;
     // Người nhận

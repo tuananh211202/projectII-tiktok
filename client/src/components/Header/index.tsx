@@ -7,13 +7,13 @@ import { AiOutlineBell } from 'react-icons/ai';
 import { BiUser } from 'react-icons/bi';
 import { FiLogOut } from 'react-icons/fi';
 import { getProfile } from '../../API';
+import { useNavigate } from 'react-router-dom';
 
-const ColorList = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae'];
-
-
+export const ColorList = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae'];
 
 const Header = (props: any) => {
     const { modalOpen, setModalOpen } = props;
+    const navigate = useNavigate();
     const [accessToken, setAccessToken] = useState(Cookies.get('access_token') ?? '');
     const [user, setUser] = useState({id: 0, name: '', email: '', description: ''});
 
@@ -21,7 +21,7 @@ const Header = (props: any) => {
         {
             key: '0',
             label: (
-                <Button type='link' style={{ color: "black" }}>
+                <Button type='link' style={{ color: "black" }} onClick={() => navigate('/profile/' + user.id)}>
                     <Row className='w-24 pl-1 pr-2 flex items-center'>
                         <Col span={10}><BiUser size={14} /></Col>
                         <Col span={14} style={{ fontFamily: "Signika", fontWeight: 500 }}>Profile</Col>
@@ -54,7 +54,7 @@ const Header = (props: any) => {
     return (
         <Row 
             className="w-full border-solid border-b-2 flex items-center px-6 justify-between" 
-            style={{ height: "80px" }}
+            style={{ height: "80px", position: 'fixed', top: 0, left: 0 }}
         >
             <Logo />
             <SearchBox />

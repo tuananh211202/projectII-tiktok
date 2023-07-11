@@ -32,3 +32,23 @@ export const getProfile = (token: string) => {
         headers: { Authorization: `Bearer ${token}` }
      });
 }
+
+export const getProfileById = (id: number, setUser: any) => {
+    return axios.get('http://localhost:3001/users/profile/' + id).then(res => setUser(res.data))
+    .catch(error => {
+        if(error.response && error.response.status === 400){
+            setUser({
+                id: 0,
+                name: '',
+                username: '',
+                description: ''
+            });
+        }
+    });
+}
+
+export const getMessage = (token: string, senderId: number, receiverId: number) => {
+    return axios.get('http://localhost:3001/users/message/'+senderId+'/'+receiverId, {
+        headers: { Authorization: `Bearer ${token}` }        
+    });
+}

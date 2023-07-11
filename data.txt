@@ -1,0 +1,18 @@
+# User
+anh1@gmail.com
+123456
+anh2@gmail.com
+123456
+anh3@gmail.com 
+123456
+anh4@gmail.com 
+123456
+anh5@gmail.com
+123456
+
+#Message
+1vs5: 
+    1->5: Hello
+    5->1: Hi
+    1->5: Bye
+    5->1: See you later
