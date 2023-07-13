@@ -18,3 +18,13 @@ export type CreateMessageParams = {
     senderId: number;
     receiverId: number;
 }
+
+export type UpdateUserParams = {
+    name: string;
+    description: string;
+}
+
+export type UpdatePasswordParams = {
+    old_password: string;
+    password: string;
+}

@@ -3,6 +3,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Profile from '../Profile';
 import Cookies from 'js-cookie';
+import Homepage from '../Homepage';
 
 const Main = () => {
     const access_token = Cookies.get('access_token');
@@ -11,6 +12,7 @@ const Main = () => {
             style={{ position: "fixed", top: 80, left: 192 }}
         >
             <Routes>
+                <Route path='/' element={<Homepage />} />
                 {
                     access_token ?
                     <>

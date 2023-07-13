@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { Public } from '../auth/decorators/public.decorator';
 import { CreateUserDto } from 'src/dtos/CreateUser.dto';
 import { UsersService } from './users.service';
 import { CreateUserNotiDto } from 'src/dtos/CreateUserNoti.dto';
 import { GetNotiDto } from 'src/dtos/GetNoti.dto';
 import { CreateMessageDto } from 'src/dtos/CreateMessage.dto';
+import { UpdateUserDto } from 'src/dtos/UpdateUser.dto';
+import { UpdatePasswordDto } from 'src/dtos/UpdatePassword.dto';
 
 @Controller('users')
 export class UsersController {
@@ -22,6 +24,16 @@ export class UsersController {
     @Get('profile/:id')
     getUser(@Param('id', ParseIntPipe) id: number){
         return this.userService.getUserById(id);
+    }
+
+    @Put('profile/:id')
+    updateUser(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto){
+        return this.userService.updateUser(id, updateUserDto);
+    }
+
+    @Put('profile/password/:id')
+    updatePassword(@Param('id', ParseIntPipe) id: number, @Body() updatePasswordDto: UpdatePasswordDto){
+        return this.userService.updatePassword(id, updatePasswordDto);
     }
 
     // Tạo thông báo cho id

@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/User';
-import { CreateMessageParams, CreateUserNotiParams, CreateUserParams, GetNotiParams } from 'src/utils/types';
+import { CreateMessageParams, CreateUserNotiParams, CreateUserParams, GetNotiParams, UpdatePasswordParams, UpdateUserParams } from 'src/utils/types';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Noti } from 'src/typeorm/entities/Noti';
@@ -19,7 +19,8 @@ export class UsersService {
 
   async createUser(userDetails: CreateUserParams){
     const user = await this.userRepository.findOneBy({ username: userDetails.username });
-    if(!user){
+    const userByName = await this.userRepository.findOneBy({ name: userDetails.name });
+    if(!user && !userByName){
       userDetails.password = await bcrypt.hash(userDetails.password, 10);
       const newUser = this.userRepository.create({ 
         ...userDetails, 
@@ -36,6 +37,37 @@ export class UsersService {
         HttpStatus.CONFLICT
       );
     }
+  }
+
+  async updateUser(id: number, updateUserDetails: UpdateUserParams){
+    let user = await this.userRepository.findOneBy({ id: id })
+    if(!user){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    user = { ...user, ...updateUserDetails };
+    await this.userRepository.save(user);
+  }
+
+  async updatePassword(id: number, updatePasswordDetails: UpdatePasswordParams){
+    let user = await this.userRepository.findOneBy({ id: id });
+    if(!user){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    const is_equal = await bcrypt.compare(updatePasswordDetails.old_password, user.password);
+    if(!is_equal){
+      throw new HttpException(
+        'Wrong password!!!',
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+    user.password = await bcrypt.hash(updatePasswordDetails.password, 10);
+    await this.userRepository.save(user);
   }
 
   async getUserById(id: number){

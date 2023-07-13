@@ -1,31 +1,34 @@
 import { Button, Col, FloatButton, Input, List, Row } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { MdAddComment } from "react-icons/md";
 import { AiOutlineMinus, AiOutlineSend } from 'react-icons/ai';
 import Cookies from 'js-cookie';
 import { io } from 'socket.io-client';
-import { getMessage, getProfile } from '../../API';
+import { getMessage, getProfileById } from '../../API';
+import { AppContext } from '../../context/provider';
 
-const socket = io('http://localhost:3001');
+export const socket = io('http://localhost:3001');
 
 const Chat = () => {
-    const [onChat, setOnChat] = useState(false);
-    const accessToken = Cookies.get('access_token') ?? '';
-    const [user, setUser] = useState({ id: 0, name: '', email: '', description: '' });
+    const { state, dispatch } = useContext(AppContext);
+    const [onChat, setOnChat] = useState({id: 0, username: '', name: '', description: ''});
     const chatBoxRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (accessToken !== '') getProfile(accessToken).then(res => setUser(res.data));
-        getMessage(accessToken, 1, 5).then(res => setMessages(res.data));
-    // eslint-disable-next-line
-    }, []);
+        getProfileById(state.onChat, setOnChat);
+    },[state.onChat]);
+
+    useEffect(() => {
+        if(state.onChat !== 0 && state.userId !== 0) getMessage(state.accessToken, state.userId, state.onChat).then(res => setMessages(res.data));
+    }, [state.onChat, state.userId, state.accessToken]);
 
     const [messages, setMessages] = useState<any[]>([]);
     const [message, setMessage] = useState('');
 
     useEffect(() => {
         socket.on('recMessage', (msg) => {
-            getMessage(accessToken, msg.senderId, msg.receiverId).then(res => setMessages(res.data));
+            if(msg.senderId === state.userId || msg.receiverId === state.userId)
+                getMessage(state.accessToken, msg.senderId, msg.receiverId).then(res => setMessages(res.data));
         });
     // eslint-disable-next-line
     }, [messages]);
@@ -33,25 +36,24 @@ const Chat = () => {
     useEffect(() => {
         const chatBox = chatBoxRef.current;
         if (chatBox) chatBox.scrollTop = chatBox.scrollHeight - chatBox.offsetHeight;
-        console.log(messages);
-    },[messages, onChat]);
+    },[messages, state.isOnChat]);
 
     const handleChat = () => {
-        if(message !== ''){
-            socket.emit('sendMessage', {description: message, senderId: 1, receiverId: 5});
+        if(message !== '' && state.onChat !== 0){
+            socket.emit('sendMessage', {description: message, senderId: state.userId, receiverId: state.onChat});
             setMessage('');
         }
     }
 
     return (
-        accessToken === '' ? null :
-        !onChat
+        state.accessToken === '' ? null :
+        !state.isOnChat
         ?
         <FloatButton 
             icon={<MdAddComment />} 
             type='primary' 
             style={{ right: 20, bottom: 20 }} 
-            onClick={() => setOnChat(true)}
+            onClick={() => {dispatch({ type: 'OPEN_CHAT', payload: { onChat: state.onChat } });Cookies.set('on_chat', ''+ state.onChat)}}
         />
         :
         <Row 
@@ -62,9 +64,9 @@ const Chat = () => {
                 className='w-full h-10 p-2 border-solid border-b-2 flex items-center justify-between rounded-t-xl'
                 style={{ backgroundColor: "#1677ff" }}
             >
-                <Col className='text-white'>sada</Col>
+                <Col className='text-white'>{onChat.name}|{onChat.username}</Col>
                 <Col>
-                    <Button type='link' onClick={() => setOnChat(false)}
+                    <Button type='link' onClick={() => dispatch({ type: 'CLOSE_CHAT', payload: { onChat: 0 } })}
                         className='m-0 p-0 border-none flex items-center h-3 w-3'
                     >
                         <AiOutlineMinus color='white' />
@@ -82,9 +84,9 @@ const Chat = () => {
                         dataSource={messages}
                         renderItem={(item) => (
                             <List.Item className='w-full border-none'>
-                                <Row className={'w-full flex ' + (item.sender === user.id ? 'justify-end' : '')}>
-                                    <Row className={'w-fit border-solid border-2 border-black px-1 rounded-lg flex ' + (item.sender === user.id ? 'justify-end' : '')}
-                                        style={{ fontFamily: "Signika", backgroundColor: item.receiver === user.id ?  "white" : "#d5f1ff", borderColor: "#d1dfe8" }}
+                                <Row className={'w-full flex ' + (parseInt(item.sender) === state.userId ? 'justify-end' : '')}>
+                                    <Row className={'w-fit border-solid border-2 border-black px-1 rounded-lg flex ' + (parseInt(item.sender) === state.userId ? 'justify-end' : '')}
+                                        style={{ fontFamily: "Signika", backgroundColor: parseInt(item.receiver) === state.userId ?  "white" : "#d5f1ff", borderColor: "#d1dfe8" }}
                                     >
                                         <p className='w-fit break-words' style={{ maxWidth: "160px" }}>{item.description}</p>
                                     </Row>
@@ -99,7 +101,9 @@ const Chat = () => {
                         className='w-5/6 rounded-full' 
                         value={message}
                         placeholder='Enter' onChange={(e) => setMessage(e.target.value)} 
-                        style={{ fontFamily: "Signika" }} />
+                        style={{ fontFamily: "Signika" }} 
+                        onPressEnter={handleChat}
+                    />
                     <Button type='link' onClick={handleChat}
                         className='m-0 p-0 border-none flex items-center'
                     >

@@ -1,27 +1,53 @@
 import { Avatar, Badge, Button, Col, Dropdown, MenuProps, Row } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Logo from '../Logo';
 import SearchBox from '../SearchBox';
 import Cookies from 'js-cookie';
 import { AiOutlineBell } from 'react-icons/ai';
 import { BiUser } from 'react-icons/bi';
 import { FiLogOut } from 'react-icons/fi';
-import { getProfile } from '../../API';
+import { getNoti, getProfileById } from '../../API';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../../context/provider';
+import { socket } from '../Chat';
 
 export const ColorList = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae'];
 
-const Header = (props: any) => {
-    const { modalOpen, setModalOpen } = props;
+const Header = () => {
+    const { state, dispatch } = useContext(AppContext);
     const navigate = useNavigate();
-    const [accessToken, setAccessToken] = useState(Cookies.get('access_token') ?? '');
-    const [user, setUser] = useState({id: 0, name: '', email: '', description: ''});
+    const [user, setUser] = useState({id: 0, name: '', username: '', description: ''});
+    const [notis, setNotis] = useState<any[]>([]);
+
+    const handleLogout = () => {
+        Cookies.remove('access_token');
+        Cookies.remove('user_id');
+        dispatch({ type: 'ON_LOGOUT', payload: null });
+        navigate('/');
+    }
+
+    // useEffect(() => {
+    //     getNoti(state.accessToken, state.userId).then(res => setNotis(res.data));
+    // }, [state.accessToken, state.userId]);
+
+    useEffect(() => {
+        if(state.accessToken !== '') {
+            getProfileById(state.userId, setUser);
+            getNoti(state.accessToken, state.userId).then(res => setNotis(res.data));
+        }
+    }, [state.accessToken, state.userId]);
+
+    useEffect(() => {
+        socket.on('recNoti', (noti) => {
+            if(noti.id === state.userId) getNoti(state.accessToken, state.userId).then(res => setNotis(res.data));
+        })
+    }, [notis, state.accessToken, state.userId]);
 
     const items: MenuProps['items'] = [
         {
             key: '0',
             label: (
-                <Button type='link' style={{ color: "black" }} onClick={() => navigate('/profile/' + user.id)}>
+                <Button type='link' style={{ color: "black" }} href={'/profile/' + user.id}>
                     <Row className='w-24 pl-1 pr-2 flex items-center'>
                         <Col span={10}><BiUser size={14} /></Col>
                         <Col span={14} style={{ fontFamily: "Signika", fontWeight: 500 }}>Profile</Col>
@@ -33,7 +59,7 @@ const Header = (props: any) => {
             key: '1',
             label: (
                 <Button type='link' 
-                    onClick={() => { Cookies.remove('access_token');setAccessToken(''); }} 
+                    onClick={handleLogout} 
                     style={{ color: "red" }}
                 >
                     <Row className='w-24 pl-1 pr-2 flex items-center'>
@@ -43,13 +69,7 @@ const Header = (props: any) => {
                 </Button>
             )
         }
-    ]
-    
-    useEffect(() => setAccessToken(Cookies.get('access_token') ?? ''),[modalOpen]);
-
-    useEffect(() => {
-        if(accessToken !== '') getProfile(accessToken).then(res => setUser(res.data));
-    },[accessToken]);
+    ];
 
     return (
         <Row 
@@ -66,10 +86,10 @@ const Header = (props: any) => {
                         Upload
                     </Button>
                     {
-                        accessToken 
+                        state.accessToken 
                         ? 
                         <>
-                            <Badge count={0} showZero>
+                            <Badge count={notis.length} showZero>
                                 <AiOutlineBell size={20} />
                             </Badge>
                             <Dropdown menu={{ items }} trigger={['click']}>
@@ -82,7 +102,7 @@ const Header = (props: any) => {
                         </>
                         :
                         <Button 
-                            onClick={() => setModalOpen(true)}
+                            onClick={() => dispatch({ type: 'OPEN_MODAL', payload: null })}
                             className="text-white"
                             style={{ fontSize: "15px", fontFamily: "Signika", fontWeight: 600, backgroundColor: "#FE2C55" }}
                         >
