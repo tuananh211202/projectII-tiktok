@@ -7,6 +7,7 @@ interface StateInterface {
     userId: number;
     accessToken: string;
     isModalOpen: boolean;
+    isNotiOpen: boolean;
 }
 
 type ActionType = 
@@ -16,6 +17,7 @@ type ActionType =
     | {type: 'ON_LOGOUT'; payload: any}
     | {type: 'OPEN_MODAL'; payload: any}
     | {type: 'CLOSE_MODAL'; payload: any}
+    | {type: 'TOGGLE_NOTI'; payload: any}
 ;
 
 export const AppContext = createContext<{ state: StateInterface; dispatch: React.Dispatch<ActionType> }>({

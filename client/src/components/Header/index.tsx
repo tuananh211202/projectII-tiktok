@@ -1,15 +1,16 @@
-import { Avatar, Badge, Button, Col, Dropdown, MenuProps, Row } from 'antd';
+import { Avatar, Badge, Button, Col, Dropdown, Menu, MenuProps, Row } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import Logo from '../Logo';
 import SearchBox from '../SearchBox';
 import Cookies from 'js-cookie';
-import { AiOutlineBell } from 'react-icons/ai';
+import { AiOutlineBell, AiOutlineUserAdd } from 'react-icons/ai';
 import { BiUser } from 'react-icons/bi';
 import { FiLogOut } from 'react-icons/fi';
 import { getNoti, getProfileById } from '../../API';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/provider';
 import { socket } from '../Chat';
+import { MdMailOutline } from 'react-icons/md';
 
 export const ColorList = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae'];
 
@@ -86,12 +87,14 @@ const Header = () => {
                         Upload
                     </Button>
                     {
-                        state.accessToken 
+                        state.accessToken   
                         ? 
                         <>
-                            <Badge count={notis.length} showZero>
-                                <AiOutlineBell size={20} />
-                            </Badge>
+                            <Button type='link' onClick={() => dispatch({ type: "TOGGLE_NOTI", payload: null })}>
+                                <Badge count={notis.length} showZero>
+                                    <AiOutlineBell size={20} />
+                                </Badge>
+                            </Button>
                             <Dropdown menu={{ items }} trigger={['click']}>
                                 <Avatar className='ml-3' style={{ backgroundColor: ColorList[user.id%4], verticalAlign: 'middle' }}>
                                     <Button className='border-none w-8 h-8 rounded-full text-white flex items-center justify-center'>
@@ -116,4 +119,4 @@ const Header = () => {
 
 export default Header;
 
-// TODO: search + noti
+// TODO: search 

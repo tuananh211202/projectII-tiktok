@@ -7,16 +7,19 @@ import Chat from './components/Chat';
 import Main from './components/Main';
 import { AppContext, AppProvider } from './context/provider';
 import Cookies from 'js-cookie';
+import NotiDropdown from './components/NotiDropdown';
+import { Route, Routes } from 'react-router-dom';
 
 const App = () => {
   return (
     <AppProvider>
       <Row className="w-full">
         <Header />
-        <SideBar />
         <UserModal/>
-        <Main />
         <Chat />
+        <NotiDropdown />
+        <SideBar />
+        <Main />
       </Row>
     </AppProvider>
   );

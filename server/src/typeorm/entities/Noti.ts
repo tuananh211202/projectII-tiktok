@@ -9,6 +9,14 @@ export class Noti {
     @Column()
     description: string;
 
+    @Column()
+    isRead: number;
+
+    @Column()
+    type: string;
+
     @ManyToOne(() => User, (user) => user.notis)
     user: User;
 }
+
+// TODO: createAt + fromId

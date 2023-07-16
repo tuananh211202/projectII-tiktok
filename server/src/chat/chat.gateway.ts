@@ -21,8 +21,8 @@ export class ChatGateway {
     await this.userService.createMessage(payload);
     this.server.emit('recMessage', payload);
 
-    const senderName = (await this.userService.getUserById(payload.senderId)).username;
-    await this.userService.createUserNoti(payload.receiverId, { description: '' + senderName + ' sent you some messages.'});
+    const name = (await this.userService.getUserById(payload.senderId)).name;
+    await this.userService.createUserNoti(payload.receiverId, { description: '' + name + ' sent you a message.', isRead: 0, type: 'message' });
     this.server.emit('recNoti', { id: payload.receiverId });
   }
 
@@ -30,8 +30,8 @@ export class ChatGateway {
   async handleFollowUser(client: Socket, payload: { userId: number, id: number }){
     await this.userService.followUser(payload.userId, payload.id);
 
-    const userName = (await this.userService.getUserById(payload.userId)).username;
-    await this.userService.createUserNoti(payload.id, { description: '' + userName + ' has started following you.'});
+    const name = (await this.userService.getUserById(payload.userId)).name;
+    await this.userService.createUserNoti(payload.id, { description: '' + name + ' has started following you.', isRead: 0, type: 'follower'});
     this.server.emit('recNoti', { id: payload.id });
   }
 

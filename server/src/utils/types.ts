@@ -7,6 +7,8 @@ export type CreateUserParams = {
 
 export type CreateUserNotiParams = {
     description: string;
+    isRead: number;
+    type: string;
 }
 
 export type GetNotiParams = {

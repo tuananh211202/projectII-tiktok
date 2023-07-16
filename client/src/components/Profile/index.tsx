@@ -7,10 +7,12 @@ import { AiOutlineMessage } from 'react-icons/ai';
 import { FiLogOut } from 'react-icons/fi';
 import Cookies from 'js-cookie';
 import { AppContext } from '../../context/provider';
+import { socket } from '../Chat';
 
 const Profile = () => {
     const {id: userId} = useParams<string>();
     const { state, dispatch } = useContext(AppContext);
+    const [ text, setText ] = useState('Follow');
     const navigate = useNavigate();
     const [isCurrent, setIsCurrent] = useState(false);
     const [user, setUser] = useState({
@@ -32,7 +34,13 @@ const Profile = () => {
         if(isCurrent){
             dispatch({ type: 'OPEN_MODAL', payload: null });
         } else {
-            
+            if(text === 'Follow'){
+                // console.log(state.userId, user.id, parseInt(userId ?? '0'));
+                socket.emit('followUser', { userId: state.userId, id: parseInt(userId ?? '0') });
+                setText('Unfollow');
+            }else {
+                setText('Follow');
+            }
         }
     }
 
@@ -47,9 +55,7 @@ const Profile = () => {
             Cookies.set('on_chat', userId ?? '0');
         }
     }
-
-    console.log(user);
-
+    
     return (
         <Row className='w-full p-10 flex items-center justify-center'>
             {user.id === 0 ? 
@@ -76,7 +82,7 @@ const Profile = () => {
                                         style={{ fontFamily: "Signika", fontWeight: "500", fontSize: "16px", color: isCurrent ? "black" : "red", width: "150px", height: "35px" }}
                                         onClick={() => handleClickLargeButton()}
                                     >
-                                        {isCurrent ? "Edit profile" : "Follow"}
+                                        {isCurrent ? "Edit profile" : text}
                                     </Button>
                                 </Col>
                                 <Col>

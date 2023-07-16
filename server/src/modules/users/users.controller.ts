@@ -48,11 +48,11 @@ export class UsersController {
         return this.userService.getAllNoti(id);
     }
 
-    // Theo dõi một người
-    @Post(':userId/follow/:id')
-    followUser(@Param('userId', ParseIntPipe) userId: number, @Param('id', ParseIntPipe) id: number){
-        return this.userService.followUser(userId, id);
-    }
+    // // Theo dõi một người
+    // @Post(':userId/follow/:id')
+    // followUser(@Param('userId', ParseIntPipe) userId: number, @Param('id', ParseIntPipe) id: number){
+    //     return this.userService.followUser(userId, id);
+    // }
 
     // Huỷ theo dõi một người
     @Delete(':userId/follow/:id')
@@ -84,3 +84,6 @@ export class UsersController {
         return this.userService.getMessage(senderId, receiverId);
     }
 }
+
+
+// TODO: change api data(add notis from + createAt for sort) + set read by id + set all read by type

@@ -64,7 +64,7 @@ const Chat = () => {
                 className='w-full h-10 p-2 border-solid border-b-2 flex items-center justify-between rounded-t-xl'
                 style={{ backgroundColor: "#1677ff" }}
             >
-                <Col className='text-white'>{onChat.name}|{onChat.username}</Col>
+                <Col className='text-white'>{onChat.name}</Col>
                 <Col>
                     <Button type='link' onClick={() => dispatch({ type: 'CLOSE_CHAT', payload: { onChat: 0 } })}
                         className='m-0 p-0 border-none flex items-center h-3 w-3'

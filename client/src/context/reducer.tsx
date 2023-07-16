@@ -5,7 +5,8 @@ export const initialState = {
     onChat: parseInt(Cookies.get('on_chat') ?? '0'),
     userId: parseInt(Cookies.get('user_id') ?? '0'),
     accessToken: Cookies.get('access_token') ?? '',
-    isModalOpen: false
+    isModalOpen: false,
+    isNotiOpen: false
 };
 
 export const appReducer = (state: any, action: any) => {
@@ -43,6 +44,11 @@ export const appReducer = (state: any, action: any) => {
             return {
                 ...state,
                 isModalOpen: false
+            }
+        case 'TOGGLE_NOTI':
+            return {
+                ...state,
+                isNotiOpen: !state.isNotiOpen
             }
         default:
             return state;

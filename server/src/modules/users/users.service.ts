@@ -126,13 +126,6 @@ export class UsersService {
     }
     const newFollow = this.followRepository.create({ followers: user, following: followedUser });
     this.followRepository.save(newFollow);
-    this.createUserNoti(id, {
-      description: "Người dùng " + user.name + " đã theo dõi bạn"
-    });
-    throw new HttpException(
-      'Add following successfully',
-      HttpStatus.CREATED
-    )
   }
 
   async unfollowUser(userId: number, id: number){
