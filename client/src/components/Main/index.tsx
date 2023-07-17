@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 import Profile from '../Profile';
 import Cookies from 'js-cookie';
 import Homepage from '../Homepage';
+import UploadModal from '../UploadModal';
 
 const Main = () => {
     const access_token = Cookies.get('access_token');
@@ -17,6 +18,7 @@ const Main = () => {
                     access_token ?
                     <>
                         <Route path='/profile/:id' element={<Profile />} />
+                        <Route path='/upload' element={<UploadModal />} />
                     </> : null
                 }      
             </Routes>    

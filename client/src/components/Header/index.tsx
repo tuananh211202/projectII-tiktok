@@ -72,6 +72,11 @@ const Header = () => {
         }
     ];
 
+    const handleUpload = () => {
+        dispatch({ type: 'OPEN_CHAT', payload: { onChat: state.onChat } });
+        navigate('/upload');
+    }
+
     return (
         <Row 
             className="w-full border-solid border-b-2 flex items-center px-6 justify-between" 
@@ -83,6 +88,7 @@ const Header = () => {
                     <Button 
                         className="mr-2" 
                         style={{ fontSize: "15px", fontFamily: "Signika", fontWeight: 600, backgroundColor: "#F1F1F2" }}
+                        onClick={handleUpload}
                     >
                         Upload
                     </Button>
