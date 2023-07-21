@@ -1,12 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/User';
-import { CreateMessageParams, CreateUserNotiParams, CreateUserParams, GetNotiParams, UpdatePasswordParams, UpdateUserParams } from 'src/utils/types';
+import { CreateMessageParams, CreateUserNotiParams, CreateUserParams, GetNotiParams, UpdatePasswordParams, UpdateUserParams, UploadPostParams } from 'src/utils/types';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Noti } from 'src/typeorm/entities/Noti';
 import { Follow } from 'src/typeorm/entities/Follow';
 import { Message } from 'src/typeorm/entities/Message';
+import { Post } from 'src/typeorm/entities/Post';
 
 @Injectable()
 export class UsersService {
@@ -15,6 +16,7 @@ export class UsersService {
     @InjectRepository(Noti) private notiRepository: Repository<Noti>,
     @InjectRepository(Follow) private followRepository: Repository<Follow>,
     @InjectRepository(Message) private messageRepository: Repository<Message>,
+    @InjectRepository(Post) private postRepository: Repository<Post>,
   ){}
 
   async createUser(userDetails: CreateUserParams){
@@ -98,8 +100,17 @@ export class UsersService {
         HttpStatus.BAD_REQUEST
       );
     }
-    const newNoti = this.notiRepository.create({...notiDetails, user});
-    return this.notiRepository.save(newNoti);
+    const currentNoti = await this.notiRepository.find({
+      where: {
+        description: notiDetails.description,
+        isRead: 0
+      }
+    });
+    if(currentNoti.length === 0){
+      const newNoti = this.notiRepository.create({...notiDetails, user});
+      return this.notiRepository.save(newNoti);
+    }
+    return null;
   }
 
   async getAllNoti(id: number){
@@ -112,7 +123,7 @@ export class UsersService {
     }
     const notis = await this.notiRepository.findBy({ user });
 
-    return notis;
+    return notis.reverse();
   }
 
   async followUser(userId: number, id: number){
@@ -232,6 +243,50 @@ export class UsersService {
         receiver: message.receiver.id
       }
     })
+  }
+
+  async uploadPost(id: number, postDetails: UploadPostParams){
+    const user = await this.userRepository.findOneBy({ id });
+    if(!user){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    const newPost = this.postRepository.create({ 
+      ...postDetails, 
+      react: 0,
+      user 
+    });
+
+    return this.postRepository.save(newPost);
+  }
+
+  async getAllPostById(id: number){
+    const user = await this.userRepository.findOneBy({ id });
+    if(!user){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    const posts = await this.postRepository.find({
+      where: { user: user }
+    });
+    return posts;
+  }
+
+  async setNotiIsRead(id: number){
+    let noti = await this.notiRepository.findOneBy({ id });
+    if(!noti){
+      throw new HttpException(
+        'Noti not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    if(noti.isRead === 0) noti.isRead = 1;
+    this.notiRepository.save(noti);
   }
 
 }

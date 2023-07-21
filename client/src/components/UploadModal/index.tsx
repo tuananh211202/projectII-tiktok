@@ -1,10 +1,14 @@
-import { Button, Col, Form, Input, InputNumber, Radio, Row, Select } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Button, Col, Form, Input, InputNumber, Radio, Row, Select, message } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UploadVideo from '../UploadVideo';
+import { uploadPost } from '../../API';
+import { AppContext } from '../../context/provider';
 
 const UploadModal = () => {
     const navigate = useNavigate();
+    const [video, setVideo] = useState<any>();
+    const { state, dispatch } = useContext(AppContext);
 
     const [form] = Form.useForm();
     const [disabled, setDisabled] = useState(true);
@@ -14,12 +18,19 @@ const UploadModal = () => {
     },[]);
 
     const handlePost = () => {
-        console.log(form.getFieldsValue());
+        const data = form.getFieldsValue(); 
+        const formData = new FormData();
+        formData.append('video', video, video.name);
+        uploadPost(state.accessToken, state.userId, formData, {
+            description: data.description,
+            cost: data.cost,
+            permission: data.permission + (data.noti === 1 ? 'n' : '')
+        }).then(() => 
+        {  
+                message.success("You have successfully posted");
+                navigate("/profile/" + state.userId)
+        });
     }
-
-    const handleChange = (e: any) => {
-        console.log(e.target.files[0]);
-    };
 
     const handleCancel = () => {
         navigate("/user");
@@ -44,7 +55,7 @@ const UploadModal = () => {
     return (
         <Row className='w-full bg-white px-48 py-20' style={{ position: "fixed", top: 80, left: 0, height: "90vh" }}>
             <Col span={8} className='h-full'>
-                <UploadVideo />
+                <UploadVideo video={video} setVideo={setVideo} />
             </Col>
             <Col span={16} className='h-full px-10 relative'>
                 <Form className='w-full' initialValues={initialValue} form={form}>

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Public } from '../auth/decorators/public.decorator';
 import { CreateUserDto } from 'src/dtos/CreateUser.dto';
 import { UsersService } from './users.service';
@@ -7,10 +7,16 @@ import { GetNotiDto } from 'src/dtos/GetNoti.dto';
 import { CreateMessageDto } from 'src/dtos/CreateMessage.dto';
 import { UpdateUserDto } from 'src/dtos/UpdateUser.dto';
 import { UpdatePasswordDto } from 'src/dtos/UpdatePassword.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { GoogleService } from 'src/google/google.service';
+import { UploadPost } from 'src/dtos/UploadPost.dto';
 
 @Controller('users')
 export class UsersController {
-    constructor(private userService: UsersService){}
+    constructor(
+        private userService: UsersService,
+        private googleService: GoogleService
+    ){}
 
     // Đăng ký
     @Public()
@@ -48,6 +54,12 @@ export class UsersController {
         return this.userService.getAllNoti(id);
     }
 
+    // Đánh dấu thông báo đã đọc
+    @Put(':id/notis')
+    setNotiIsRead(@Param('id', ParseIntPipe) id: number){
+        return this.userService.setNotiIsRead(id);
+    }
+
     // // Theo dõi một người
     // @Post(':userId/follow/:id')
     // followUser(@Param('userId', ParseIntPipe) userId: number, @Param('id', ParseIntPipe) id: number){
@@ -82,6 +94,25 @@ export class UsersController {
     @Get('message/:senderId/:receiverId')
     getMessage(@Param('senderId', ParseIntPipe) senderId: number, @Param('receiverId', ParseIntPipe) receiverId: number){
         return this.userService.getMessage(senderId, receiverId);
+    }
+
+    // upload video to google drive and get it's id
+    @Post('/upload')
+    @UseInterceptors(FileInterceptor('video', { dest: './uploads' }))
+    async uploadVideo(@UploadedFile() file){
+        return this.googleService.uploadFile(file);
+    }
+
+    // upload post
+    @Post(':id/post')
+    async uploadPost(@Param('id', ParseIntPipe) id: number, @Body() uploadPostDto: UploadPost){
+        return this.userService.uploadPost(id, uploadPostDto);
+    }
+
+    // get all post
+    @Get(':id/post')
+    async getAllPostById(@Param('id', ParseIntPipe) id: number){
+        return this.userService.getAllPostById(id);
     }
 }
 

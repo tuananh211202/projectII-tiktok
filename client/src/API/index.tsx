@@ -100,3 +100,43 @@ export const getNoti = (token: string, id: number) => {
         headers: { Authorization: `Bearer ${token}` }
     });
 }
+
+export const uploadPost = (token: string, id: number, video: any, data: any) => {
+    return axios.post('http://localhost:3001/users/upload', video, {
+        headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+        axios.post('http://localhost:3001/users/' + id + '/post', { ...data, driveId: res.data }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    });
+}
+
+export const getAllPostById = (token: string, id: number) => {
+    return axios.get('http://localhost:3001/users/' + id + '/post', {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+}
+
+export const getAllFollowers = (token: string, id: number) => {
+    return axios.get('http://localhost:3001/users/' + id + '/followers', {
+        headers: { Authorization: `Bearer ${token}` }
+    }).then(res => res.data);
+}
+
+export const getAllFollowing = (token: string, id: number) => {
+    return axios.get('http://localhost:3001/users/' + id + '/following', {
+        headers: { Authorization: `Bearer ${token}` }
+    }).then(res => res.data);
+}
+
+export const setNotiIsRead = (token: string, id: number) => {
+    return axios.put('http://localhost:3001/users/' + id + '/notis', {}, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+}
+
+export const setAllNotiIsRead = (token: string, id: number, type: string) => {
+    return axios.put('http://localhost:3001/users/' + id + '/notis/all', { type }, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+}

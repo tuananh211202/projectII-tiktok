@@ -30,3 +30,10 @@ export type UpdatePasswordParams = {
     old_password: string;
     password: string;
 }
+
+export type UploadPostParams = {
+    description: string;
+    driveId: string;
+    cost: number;
+    permission: string;
+}

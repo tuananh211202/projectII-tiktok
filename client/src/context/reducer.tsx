@@ -6,7 +6,7 @@ export const initialState = {
     userId: parseInt(Cookies.get('user_id') ?? '0'),
     accessToken: Cookies.get('access_token') ?? '',
     isModalOpen: false,
-    isNotiOpen: false
+    isNotiOpen: false,
 };
 
 export const appReducer = (state: any, action: any) => {
@@ -50,6 +50,11 @@ export const appReducer = (state: any, action: any) => {
                 ...state,
                 isNotiOpen: !state.isNotiOpen
             }
+        case 'CLOSE_NOTI':
+            return {
+                ...state,
+                isNotiOpen: false
+            }  
         default:
             return state;
     }

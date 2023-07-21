@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Noti } from "./Noti";
 import { Follow } from "./Follow";
 import { Message } from "./Message";
+import { Post } from "./Post";
 
 @Entity({ name: 'users' })
 export class User {
@@ -37,4 +38,7 @@ export class User {
 
     @OneToMany(() => Message, (message) => message.receiver)
     receivers: Message[];
+
+    @OneToMany(() => Post, (post) => post.user)
+    posts: Post[];
 }

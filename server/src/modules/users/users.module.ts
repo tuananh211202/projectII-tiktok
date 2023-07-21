@@ -6,11 +6,13 @@ import { User } from 'src/typeorm/entities/User';
 import { Noti } from 'src/typeorm/entities/Noti';
 import { Follow } from 'src/typeorm/entities/Follow';
 import { Message } from 'src/typeorm/entities/Message';
+import { GoogleService } from 'src/google/google.service';
+import { Post } from 'src/typeorm/entities/Post';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Noti, Follow, Message])],
+  imports: [TypeOrmModule.forFeature([User, Noti, Follow, Message, Post])],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, GoogleService],
   exports: [UsersService]
 })
 export class UsersModule {}

@@ -30,6 +30,8 @@
     "@nestjs/websockets": "^10.0.5",
     "@types/socket.io": "^3.0.2",
     "bcrypt": "^5.1.0",
+    "dotenv": "^16.3.1",
+    "googleapis": "^122.0.0",
     "mysql2": "^3.4.2",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",

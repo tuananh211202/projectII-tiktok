@@ -18,6 +18,7 @@ type ActionType =
     | {type: 'OPEN_MODAL'; payload: any}
     | {type: 'CLOSE_MODAL'; payload: any}
     | {type: 'TOGGLE_NOTI'; payload: any}
+    | {type: 'CLOSE_NOTI'; payload: any}   
 ;
 
 export const AppContext = createContext<{ state: StateInterface; dispatch: React.Dispatch<ActionType> }>({
