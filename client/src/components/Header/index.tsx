@@ -47,7 +47,7 @@ const Header = () => {
         {
             key: '0',
             label: (
-                <Button type='link' style={{ color: "black" }} href={'/profile/' + user.id}>
+                <Button type='link' style={{ color: "black" }} onClick={() => navigate('/profile/' + user.id)}>
                     <Row className='w-24 pl-1 pr-2 flex items-center'>
                         <Col span={10}><BiUser size={14} /></Col>
                         <Col span={14} style={{ fontFamily: "Signika", fontWeight: 500 }}>Profile</Col>

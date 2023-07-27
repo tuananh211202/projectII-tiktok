@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/User';
 import { CreateMessageParams, CreateUserNotiParams, CreateUserParams, GetNotiParams, UpdatePasswordParams, UpdateUserParams, UploadPostParams } from 'src/utils/types';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Noti } from 'src/typeorm/entities/Noti';
 import { Follow } from 'src/typeorm/entities/Follow';
@@ -287,6 +287,40 @@ export class UsersService {
 
     if(noti.isRead === 0) noti.isRead = 1;
     this.notiRepository.save(noti);
+  }
+
+  async getAllFollowingPost(id: number){
+    const user = await this.userRepository.findOneBy({ id });
+    if(!user){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const following = await this.followRepository.find({
+      where: {
+        followers: user
+      },
+      relations: ["following"]
+    });
+
+    const posts = await this.postRepository.find({
+      where: {
+        user: In(following.map(u => u.following.id))
+      },
+      relations: ["user"]
+    });
+
+    return posts.map(item => {
+      return {
+        ...item,
+        user: {
+          id: item.user.id,
+          name: item.user.name
+        }
+      }
+    }).reverse();
   }
 
 }

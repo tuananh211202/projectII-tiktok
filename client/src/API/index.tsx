@@ -117,6 +117,12 @@ export const getAllPostById = (token: string, id: number) => {
     });
 }
 
+export const getFollowingPost = (token: string, id: number) => {
+    return axios.get('http://localhost:3001/users/post/' + id, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+}
+
 export const getAllFollowers = (token: string, id: number) => {
     return axios.get('http://localhost:3001/users/' + id + '/followers', {
         headers: { Authorization: `Bearer ${token}` }

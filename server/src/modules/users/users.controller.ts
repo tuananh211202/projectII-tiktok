@@ -114,6 +114,12 @@ export class UsersController {
     async getAllPostById(@Param('id', ParseIntPipe) id: number){
         return this.userService.getAllPostById(id);
     }
+
+    // get following post
+    @Get('post/:id')
+    async getAllFollowingPost(@Param('id', ParseIntPipe) id: number){
+        return this.userService.getAllFollowingPost(id);
+    }
 }
 
 

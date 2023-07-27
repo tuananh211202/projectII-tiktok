@@ -83,6 +83,8 @@ const Profile = () => {
         }
     }
 
+    console.log(posts);
+
     return (
         <Row className='w-full p-10 flex items-center justify-center'>
             {user.id === 0 ? 
@@ -136,7 +138,7 @@ const Profile = () => {
                                 return (
                                     <Col span={6} className='h-96 p-2'>
                                         <Row className='w-full bg-black rounded-lg' style={{ height: "90%" }}>
-                                            <Button type='link' className='w-full h-full m-0 p-0'>
+                                            <Button className='w-full h-full m-0 p-0'>
                                                 <video className='w-full h-full rounded-lg'>
                                                     <source src={"https://drive.google.com/uc?export=download&id="+post.driveId} type="video/mp4" />
                                                 </video>

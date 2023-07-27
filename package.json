@@ -1,0 +1,12 @@
+{
+  "name": "projectii-tiktok",
+  "version": "1.0.0",
+  "description": "Project 2 - TikGer - Tiktok and Messenger",
+  "scripts": {
+    "start:frontend": "cd client && npm start",
+    "start:backend": "cd server && npm run start:dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
