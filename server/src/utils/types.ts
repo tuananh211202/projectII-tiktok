@@ -37,3 +37,7 @@ export type UploadPostParams = {
     cost: number;
     permission: string;
 }
+
+export type CommentParams = {
+    description: string;
+}

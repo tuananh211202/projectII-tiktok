@@ -9,6 +9,7 @@ import { AppContext, AppProvider } from './context/provider';
 import Cookies from 'js-cookie';
 import NotiDropdown from './components/NotiDropdown';
 import { Route, Routes } from 'react-router-dom';
+import DetailsPost from './components/DetailsPost';
 
 const App = () => {
   return (

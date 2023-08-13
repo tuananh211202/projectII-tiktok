@@ -2,18 +2,58 @@ import { Avatar, Button, Col, Row } from "antd";
 import React, { useContext, useEffect, useState } from "react";
 import { AiFillCaretDown, AiFillCaretUp, AiOutlineComment, AiOutlineHeart } from "react-icons/ai";
 import { AppContext } from "../../context/provider";
-import { getFollowingPost } from "../../API";
+import { getAllReact, getFollowingPost } from "../../API";
 import { ColorList } from "../Header";
 import { descriptionAndHashtag } from "../../utils";
+import { useNavigate } from "react-router-dom";
+import { socket } from "../Chat";
 
 const Following = () => {
     const [posts, setPosts] = useState<any[]>([]);
     const [pos, setPos] = useState(0);
     const { state, dispatch } = useContext(AppContext);
+    const [reacts, setReacts] = useState<string[]>([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        getAllReact(state.accessToken, posts[pos]?.id ?? 0).then(res => setReacts(res.data))
+            .catch((err) => {
+                console.log(err);
+            });
+    }, [state.accessToken, pos, posts]);
+
+    useEffect(() => {
+        socket.on('recCR', cmt => {
+            if (posts[pos]?.id && cmt.id === posts[pos]?.id) {
+                getAllReact(state.accessToken, posts[pos]?.id).then(res => setReacts(res.data))
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
+        })
+    }, [reacts, state.accessToken, pos, posts]);
+
+    const handleReact = () => {
+        if (reacts.includes("" + state.userId)) {
+            socket.emit("commentAndReact", {
+                type: "delete",
+                postId: posts[pos]?.id ?? 0,
+                userId: state.userId
+            });
+        } else {
+            socket.emit("commentAndReact", {
+                description: "",
+                postId: posts[pos]?.id ?? 0,
+                userId: state.userId
+            });
+        }
+    }
 
     useEffect(() => {
         getFollowingPost(state.accessToken, state.userId).then(res => setPosts(res.data));
     }, [state.accessToken, state.userId]);
+
+    console.log(reacts);
     
     return <>
         <Row className="w-11/12 flex items-center justify-center">
@@ -57,18 +97,18 @@ const Following = () => {
                             </Row>
                         </Col>
                         <Col offset={1} span={4} className="flex justify-end">
-                            <Button className="w-20" style={{ fontFamily: "Signika", color: "red" }}>
-                                Unfollow
+                            <Button className="w-fit" style={{ fontFamily: "Signika", color: "red" }}>
+                                {pos + 1}/ {posts.length}
                             </Button>
                         </Col>
                     </Row>
                     <Row className="w-full flex justify-center items-center relative py-2" style={{ height: "580px" }}>
                         <Row className="w-2/3 bg-black h-full rounded-lg">
-                            <Button className='w-full h-full m-0 p-0'>
+                         
                                 <video className='w-full h-full rounded-lg' controls>
                                     <source src={"https://drive.google.com/uc?export=download&id=" + posts[pos].driveId} type="video/mp4" />
                                 </video>
-                            </Button>
+                     
                         </Row>
 
                         <Row className="w-10 h-fit absolute right-7">
@@ -90,17 +130,17 @@ const Following = () => {
                         </Row>
 
                         <Row className="w-10 h-fit absolute bottom-7 right-7">
-                            <Button className="m-0 p-0 border-none rounded-full w-10 h-10">
+                            <Button className="m-0 p-0 border-none rounded-full w-10 h-10" onClick={handleReact}>
                                 <Row className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                    <AiOutlineHeart size={20} />
+                                    <AiOutlineHeart size={20} color={reacts.includes("" + state.userId) ? "red" : "black" } />
                                 </Row>
                             </Button>
 
                             <Row className="w-full flex items-center justify-center text-lg" style={{ fontFamily: "Signika" }}>
-                                0
+                                {reacts.length}
                             </Row>
 
-                            <Button  className="m-0 p-0 mt-2 border-none rounded-full w-10 h-10">
+                            <Button  className="m-0 p-0 mt-2 border-none rounded-full w-10 h-10" onClick={() => navigate("/post/" + posts[pos].id)}>
                                 <Row className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
                                     <AiOutlineComment size={20} />
                                 </Row>

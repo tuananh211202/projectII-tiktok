@@ -3,6 +3,7 @@ import { Noti } from "./Noti";
 import { Follow } from "./Follow";
 import { Message } from "./Message";
 import { Post } from "./Post";
+import { Comment } from "./Comment";
 
 @Entity({ name: 'users' })
 export class User {
@@ -41,4 +42,7 @@ export class User {
 
     @OneToMany(() => Post, (post) => post.user)
     posts: Post[];
+
+    @OneToMany(() => Comment, (comment) => comment.user)
+    comments: Comment[];
 }

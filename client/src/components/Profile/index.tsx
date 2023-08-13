@@ -83,6 +83,10 @@ const Profile = () => {
         }
     }
 
+    const handleOpenDetail = (postId: number) => {
+        navigate("/post/" + postId);
+    }
+
     console.log(posts);
 
     return (
@@ -96,7 +100,7 @@ const Profile = () => {
                     style={{ fontFamily: "Signika" }}
                 />
             : 
-                <Row className='w-full'>
+                <Row className='w-full overflow-y-auto inline-block' style={{ height: "650px" }}>
                     <Row className='w-full'>
                         <Col>
                             <Avatar size={90} style={{ backgroundColor: ColorList[user.id % 4], verticalAlign: 'middle' }}>
@@ -138,7 +142,7 @@ const Profile = () => {
                                 return (
                                     <Col span={6} className='h-96 p-2'>
                                         <Row className='w-full bg-black rounded-lg' style={{ height: "90%" }}>
-                                            <Button className='w-full h-full m-0 p-0'>
+                                            <Button className='w-full h-full m-0 p-0' onClick={() => handleOpenDetail(post.id)}>
                                                 <video className='w-full h-full rounded-lg'>
                                                     <source src={"https://drive.google.com/uc?export=download&id="+post.driveId} type="video/mp4" />
                                                 </video>

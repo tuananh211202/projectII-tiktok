@@ -35,6 +35,17 @@ export class ChatGateway {
     this.server.emit('recNoti', { id: payload.id });
   }
 
+  @SubscribeMessage('commentAndReact')
+  async handleComment(client: Socket, payload: { postId: number, userId: number, description?: string, type?: string }){
+    if(payload.type === "delete"){
+      await this.userService.deleteReact(payload.postId, payload.userId);
+      this.server.emit('recCR', { id: payload.postId });
+    }else {
+      this.userService.createComment(payload.postId, payload.userId, { description: payload.description });
+      this.server.emit('recCR', { id: payload.postId });
+    }
+  }
+
   afterInit(server: Server){
     console.log("Start socket server!!!");
   }

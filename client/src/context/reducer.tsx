@@ -7,6 +7,7 @@ export const initialState = {
     accessToken: Cookies.get('access_token') ?? '',
     isModalOpen: false,
     isNotiOpen: false,
+    postId: 0
 };
 
 export const appReducer = (state: any, action: any) => {
@@ -55,6 +56,11 @@ export const appReducer = (state: any, action: any) => {
                 ...state,
                 isNotiOpen: false
             }  
+        case 'TOOGLE_DETAIL':
+            return {
+                ...state,
+                postId: action.payload.id
+            }
         default:
             return state;
     }

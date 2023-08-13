@@ -1,3 +1,4 @@
+import { message } from "antd";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -108,11 +109,19 @@ export const uploadPost = (token: string, id: number, video: any, data: any) => 
         axios.post('http://localhost:3001/users/' + id + '/post', { ...data, driveId: res.data }, {
             headers: { Authorization: `Bearer ${token}` }
         });
-    });
+    }).catch(err => {
+        message.error("Some thing wrong!!!");
+    }); 
 }
 
 export const getAllPostById = (token: string, id: number) => {
     return axios.get('http://localhost:3001/users/' + id + '/post', {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+}
+
+export const getPostByPostId = (token: string, id: number) => {
+    return axios.get('http://localhost:3001/users/watch/' + id, {
         headers: { Authorization: `Bearer ${token}` }
     });
 }
@@ -143,6 +152,32 @@ export const setNotiIsRead = (token: string, id: number) => {
 
 export const setAllNotiIsRead = (token: string, id: number, type: string) => {
     return axios.put('http://localhost:3001/users/' + id + '/notis/all', { type }, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+}
+
+export const getAllReact = (token: string, postId: number) => {
+    return axios.get('http://localhost:3001/users/react/' + postId, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+}
+
+export const getAllComment = (token: string, postId: number) => {
+    return axios.get('http://localhost:3001/users/comment/' + postId, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+}
+
+export const deleteReact = (token: string, postId: number, userId: number) => {
+    return axios.delete('http://localhost:3001/users/react/' + postId + '/' + userId, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+}
+
+export const createComment = (token: string, postId: number, userId: number, description: string) => {
+    return axios.post('http://localhost:3001/users/comment/' + postId + '/' + userId, {
+        description: description
+    },{
         headers: { Authorization: `Bearer ${token}` }
     });
 }

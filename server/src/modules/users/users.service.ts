@@ -1,13 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/User';
-import { CreateMessageParams, CreateUserNotiParams, CreateUserParams, GetNotiParams, UpdatePasswordParams, UpdateUserParams, UploadPostParams } from 'src/utils/types';
+import { CommentParams, CreateMessageParams, CreateUserNotiParams, CreateUserParams, GetNotiParams, UpdatePasswordParams, UpdateUserParams, UploadPostParams } from 'src/utils/types';
 import { In, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Noti } from 'src/typeorm/entities/Noti';
 import { Follow } from 'src/typeorm/entities/Follow';
 import { Message } from 'src/typeorm/entities/Message';
 import { Post } from 'src/typeorm/entities/Post';
+import { Comment } from 'src/typeorm/entities/Comment';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +18,7 @@ export class UsersService {
     @InjectRepository(Follow) private followRepository: Repository<Follow>,
     @InjectRepository(Message) private messageRepository: Repository<Message>,
     @InjectRepository(Post) private postRepository: Repository<Post>,
+    @InjectRepository(Comment) private commentRepository: Repository<Comment>
   ){}
 
   async createUser(userDetails: CreateUserParams){
@@ -271,9 +273,18 @@ export class UsersService {
       );
     }
     const posts = await this.postRepository.find({
-      where: { user: user }
+      where: { user: user },
+      relations: ["user"]
     });
-    return posts;
+    return posts.map(item => {
+      return {
+        ...item,
+        user: {
+          id: item.user.id,
+          name: item.user.name
+        }
+      }
+    }).reverse();
   }
 
   async setNotiIsRead(id: number){
@@ -323,4 +334,115 @@ export class UsersService {
     }).reverse();
   }
 
+  async getPostByPostId(id: number){
+    const post = await this.postRepository.find({
+      where: {
+        id: id
+      },
+      relations: ["user"]
+    });
+
+    if(!post){
+      throw new HttpException(
+        'Post not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    return post;
+  }
+
+  async createComment(postId: number, userId: number, commentDetails: CommentParams){
+    const post = await this.postRepository.findOneBy({ id: postId });
+    if(!post){
+      throw new HttpException(
+        'Post not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if(!user){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const comment = this.commentRepository.create({
+      description: commentDetails.description,
+      user: user,
+      post: post
+    });
+
+    await this.commentRepository.save(comment);
+  }
+
+  async deleteReact(postId: number, userId: number){
+    const post = await this.postRepository.findOneBy({ id: postId });
+    if(!post){
+      throw new HttpException(
+        'Post not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if(!user){
+      throw new HttpException(
+        'User not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    await this.commentRepository.delete({ description: "", post: post, user: user });
+  }
+
+  async getAllReact(postId: number){
+    const post = await this.postRepository.findOneBy({ id: postId });
+    if(!post){
+      throw new HttpException(
+        'Post not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const comments = await this.commentRepository.find({
+      where: {
+        post: post
+      },
+      relations: ["user"]
+    });
+
+    return comments.filter(comment => comment.description === "").map(comment => {
+      return comment.user.id;
+    });
+  }
+
+  async getAllComment(postId: number){
+    const post = await this.postRepository.findOneBy({ id: postId });
+    if(!post){
+      throw new HttpException(
+        'Post not found!!!',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const comments = await this.commentRepository.find({
+      where: {
+        post: post
+      },
+      relations: ["user"]
+    });
+
+    return comments.filter(comment => comment.description !== "").map(comment => {
+      return {
+        ...comment,
+        user: {
+          id: comment.user.id,
+          name: comment.user.name
+        }
+      }
+    });
+  }
 }

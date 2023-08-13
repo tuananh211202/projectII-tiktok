@@ -8,6 +8,7 @@ interface StateInterface {
     accessToken: string;
     isModalOpen: boolean;
     isNotiOpen: boolean;
+    postId: number;
 }
 
 type ActionType = 
@@ -19,6 +20,7 @@ type ActionType =
     | {type: 'CLOSE_MODAL'; payload: any}
     | {type: 'TOGGLE_NOTI'; payload: any}
     | {type: 'CLOSE_NOTI'; payload: any}   
+    | {type: 'TOOGLE_DETAIL'; payload: any}
 ;
 
 export const AppContext = createContext<{ state: StateInterface; dispatch: React.Dispatch<ActionType> }>({

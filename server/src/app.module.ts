@@ -13,6 +13,7 @@ import { ChatGateway } from './chat/chat.gateway';
 // import { SocketModule } from '@nestjs/platform-socket.io';
 import { GoogleService } from './google/google.service';
 import { Post } from './typeorm/entities/Post';
+import { Comment } from './typeorm/entities/Comment';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -22,7 +23,7 @@ import { Post } from './typeorm/entities/Post';
     username: 'root',
     password: '123456',
     database: 'project_tiktok',
-    entities: [User, Noti, Follow, Message, Post],
+    entities: [User, Noti, Follow, Message, Post, Comment],
     synchronize: true,
   }), AuthModule, UsersModule, CorsModule],
   controllers: [AppController],

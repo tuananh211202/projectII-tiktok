@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import Homepage from '../Homepage';
 import UploadModal from '../UploadModal';
 import Following from '../Following';
+import DetailsPost from '../DetailsPost';
 
 const Main = () => {
     const access_token = Cookies.get('access_token');
@@ -21,6 +22,7 @@ const Main = () => {
                         <Route path='/profile/:id' element={<Profile />} />
                         <Route path='/upload' element={<UploadModal />} />
                         <Route path='/following' element={<Following />} />
+                        <Route path='/post/:id' element={<DetailsPost />} />
                     </> : null
                 }      
             </Routes>    

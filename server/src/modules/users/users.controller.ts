@@ -10,6 +10,7 @@ import { UpdatePasswordDto } from 'src/dtos/UpdatePassword.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GoogleService } from 'src/google/google.service';
 import { UploadPost } from 'src/dtos/UploadPost.dto';
+import { CreateCommentDto } from 'src/dtos/CreateComment.dto';
 
 @Controller('users')
 export class UsersController {
@@ -119,6 +120,36 @@ export class UsersController {
     @Get('post/:id')
     async getAllFollowingPost(@Param('id', ParseIntPipe) id: number){
         return this.userService.getAllFollowingPost(id);
+    }
+
+    // get Post by postId
+    @Get('watch/:id')
+    async getPostByPostId(@Param('id', ParseIntPipe) id: number){
+        return this.userService.getPostByPostId(id);
+    }
+
+    // create Comment
+    @Post('comment/:postId/:userId')
+    async createComment(@Param('postId', ParseIntPipe) postId: number, @Param('userId', ParseIntPipe) userId: number, @Body() commentDto: CreateCommentDto){
+        return this.userService.createComment(postId, userId, commentDto);
+    }
+
+    // get all comment
+    @Get('comment/:postId')
+    async getAllComment(@Param('postId', ParseIntPipe) postId: number){
+        return this.userService.getAllComment(postId);
+    }
+
+    // get all react
+    @Get('react/:postId')
+    async getAllReact(@Param('postId', ParseIntPipe) postId: number){
+        return this.userService.getAllReact(postId);
+    }
+
+    // delete react
+    @Delete('react/:postId/:userId')
+    async deleteReact(@Param('postId', ParseIntPipe) postId: number, @Param('userId', ParseIntPipe) userId: number){
+        return this.userService.deleteReact(postId, userId);
     }
 }
 
